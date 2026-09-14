@@ -802,7 +802,11 @@ if (welcomeHeading) {
       id: payment.reference,
       service: booking.service,
       date: booking.date,
-      status: payment.status // "Pending" right after payment
+      status: payment.status, // "Pending" right after payment
+      time: booking.time,
+      address: booking.address,
+      phone: booking.phone,
+      problem: booking.problem
     };
 
     // Personalize the profile card with the real name/phone that was entered
@@ -824,7 +828,16 @@ if (welcomeHeading) {
 
   } else {
     // No real booking yet this session - use the most recent demo booking instead
-    currentBooking = { id: "HMFX-118420", service: "Home Cleaning", date: "2026-09-02", status: "Assigned" };
+    currentBooking = {
+      id: "HMFX-118420",
+      service: "Home Cleaning",
+      date: "2026-09-02",
+      status: "Assigned",
+      time: "10:00",
+      address: "House 12, Road 4, Dhanmondi, Dhaka",
+      phone: "01712345678",
+      problem: "Full apartment deep cleaning before guests arrive."
+    };
   }
 
   // ----- 1. Welcome section -----
@@ -1570,5 +1583,88 @@ if (adminLoginForm) {
         window.location.href = "admin.html";
       }, 600);
     }
+  });
+}
+
+
+/* ---------------------------------------------------------
+   12. BOOKING STATUS PAGE (booking-status.html)
+   Shows full detail for the customer's current booking. Uses
+   the same sessionStorage / demo-fallback resolution pattern
+   as the Dashboard (section 8), so it always shows the same
+   booking the dashboard's "Current Booking" card shows.
+   --------------------------------------------------------- */
+const statusService = document.getElementById("statusService");
+
+if (statusService) {
+
+  const savedBookingForStatus = sessionStorage.getItem("homefixBooking");
+  const savedPaymentForStatus = sessionStorage.getItem("homefixPayment");
+
+  let statusBooking;
+
+  if (savedBookingForStatus && savedPaymentForStatus) {
+    // A real demo booking was made this session - show its real details
+    const booking = JSON.parse(savedBookingForStatus);
+    const payment = JSON.parse(savedPaymentForStatus);
+
+    statusBooking = {
+      id: payment.reference,
+      service: booking.service,
+      date: booking.date,
+      time: booking.time,
+      address: booking.address,
+      phone: booking.phone,
+      problem: booking.problem,
+      status: payment.status
+    };
+  } else {
+    // No real booking yet this session - show the same demo booking
+    // used as the Dashboard's fallback "Current Booking"
+    statusBooking = {
+      id: "HMFX-118420",
+      service: "Home Cleaning",
+      date: "2026-09-02",
+      time: "10:00",
+      address: "House 12, Road 4, Dhanmondi, Dhaka",
+      phone: "01712345678",
+      problem: "Full apartment deep cleaning before guests arrive.",
+      status: "Assigned"
+    };
+  }
+
+  document.getElementById("statusService").textContent = statusBooking.service;
+  document.getElementById("statusRef").textContent = statusBooking.id;
+  document.getElementById("statusDate").textContent = statusBooking.date;
+  document.getElementById("statusTime").textContent = statusBooking.time;
+  document.getElementById("statusAddress").textContent = statusBooking.address;
+  document.getElementById("statusPhone").textContent = statusBooking.phone;
+  document.getElementById("statusProblem").textContent = statusBooking.problem;
+
+  const badgeClassMapStatus = {
+    "Pending": "badge-pending",
+    "Assigned": "badge-assigned",
+    "Completed": "badge-completed"
+  };
+  const statusBadgeEl = document.getElementById("statusBadge");
+  statusBadgeEl.textContent = statusBooking.status;
+  statusBadgeEl.classList.add(badgeClassMapStatus[statusBooking.status]);
+
+  // Highlight every step up to and including the current status
+  const statusOrderForStatus = ["Pending", "Assigned", "Completed"];
+  const currentStepIndexForStatus = statusOrderForStatus.indexOf(statusBooking.status);
+
+  document.querySelectorAll("#statusTracker .status-step").forEach(function (stepEl) {
+    const stepIndex = statusOrderForStatus.indexOf(stepEl.dataset.step);
+    if (stepIndex <= currentStepIndexForStatus) {
+      stepEl.classList.add("status-complete");
+    }
+  });
+
+  // Log Out - same behavior as the Dashboard's logout button
+  document.getElementById("logoutBtn").addEventListener("click", function () {
+    sessionStorage.removeItem("homefixBooking");
+    sessionStorage.removeItem("homefixPayment");
+    window.location.href = "index.html";
   });
 }

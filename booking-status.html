@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Booking Status - HomeFix</title>
+
+  <!-- Google Fonts: Manrope for headings, Inter for body text -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <!-- Link to our main stylesheet (shared across every page) -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Same sidebar layout as dashboard.html / profile.html -->
+  <div class="app-layout">
+
+    <aside class="app-sidebar">
+      <a href="index.html" class="logo app-sidebar-logo">HomeFix</a>
+
+      <nav class="app-sidebar-nav">
+        <a href="dashboard.html" class="app-nav-link">Dashboard</a>
+        <a href="dashboard.html#booking-history" class="app-nav-link">My Bookings</a>
+        <a href="profile.html" class="app-nav-link">Profile</a>
+      </nav>
+
+      <button type="button" class="app-nav-link app-logout-btn" id="logoutBtn">Log Out</button>
+    </aside>
+
+
+    <main class="app-main">
+
+      <section class="dash-welcome">
+        <h1>Booking Status</h1>
+        <p>Full details for your current booking.</p>
+      </section>
+
+      <section class="dash-card current-booking booking-status-card">
+
+        <div class="dash-card-header">
+          <h2 id="statusService">-</h2>
+          <span class="badge" id="statusBadge">-</span>
+        </div>
+
+        <!-- Booking status tracker: Pending -> Assigned -> Completed -->
+        <div class="status-tracker" id="statusTracker">
+          <div class="status-step" data-step="Pending">
+            <span class="status-dot"></span>
+            <span class="status-label">Pending</span>
+          </div>
+          <div class="status-line"></div>
+          <div class="status-step" data-step="Assigned">
+            <span class="status-dot"></span>
+            <span class="status-label">Assigned</span>
+          </div>
+          <div class="status-line"></div>
+          <div class="status-step" data-step="Completed">
+            <span class="status-dot"></span>
+            <span class="status-label">Completed</span>
+          </div>
+        </div>
+
+        <div class="current-booking-info booking-status-details">
+          <div class="summary-row">
+            <span>Reference</span>
+            <span id="statusRef">-</span>
+          </div>
+          <div class="summary-row">
+            <span>Preferred Date</span>
+            <span id="statusDate">-</span>
+          </div>
+          <div class="summary-row">
+            <span>Preferred Time</span>
+            <span id="statusTime">-</span>
+          </div>
+          <div class="summary-row">
+            <span>Address</span>
+            <span id="statusAddress">-</span>
+          </div>
+          <div class="summary-row">
+            <span>Phone</span>
+            <span id="statusPhone">-</span>
+          </div>
+          <div class="summary-row">
+            <span>Problem Description</span>
+            <span id="statusProblem">-</span>
+          </div>
+        </div>
+
+        <div class="booking-status-actions">
+          <a href="dashboard.html" class="btn btn-secondary btn-sm">&larr; Back to Dashboard</a>
+          <a href="dashboard.html#booking-history" class="btn btn-primary btn-sm">View Booking History</a>
+        </div>
+
+      </section>
+
+    </main>
+  </div>
+
+  <!-- Shared JavaScript file (nav toggle, footer year, form validation,
+       service data, dashboard/admin logic, and now this page's status logic) -->
+  <script src="js/script.js"></script>
+</body>
+</html>

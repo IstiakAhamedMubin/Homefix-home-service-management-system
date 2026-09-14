@@ -2419,3 +2419,27 @@ h2 {
 .admin-auth-page .auth-card {
   width: 100%;
 }
+
+
+/* =========================================================
+   24. BOOKING STATUS PAGE (booking-status.html)
+   ========================================================= */
+
+.booking-status-card {
+  max-width: 560px;
+}
+
+.booking-status-details {
+  margin: var(--space-md) 0 var(--space-lg);
+}
+
+.booking-status-actions {
+  display: flex;
+  gap: var(--space-sm);
+  flex-wrap: wrap;
+}
+
+.booking-status-actions .btn {
+  flex: 1;
+  text-align: center;
+}
