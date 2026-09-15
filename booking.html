@@ -92,6 +92,12 @@
             </div>
 
             <div class="form-field">
+              <label for="customerEmail">Email</label>
+              <input type="email" id="customerEmail" name="customerEmail" placeholder="you@example.com" required>
+              <span class="field-error" id="customerEmailError"></span>
+            </div>
+
+            <div class="form-field">
               <label for="customerPhone">Phone Number</label>
               <input type="tel" id="customerPhone" name="customerPhone" placeholder="e.g. 01712345678" required>
               <span class="field-error" id="customerPhoneError"></span>
@@ -147,6 +153,10 @@
           <div class="summary-row">
             <span>Name</span>
             <span id="summaryName">-</span>
+          </div>
+          <div class="summary-row">
+            <span>Email</span>
+            <span id="summaryEmail">-</span>
           </div>
           <div class="summary-row">
             <span>Phone</span>

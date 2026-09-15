@@ -421,6 +421,7 @@ if (bookingForm) {
 
   // ----- Form fields -----
   const nameInput = document.getElementById("customerName");
+  const emailInput = document.getElementById("customerEmail");
   const phoneInput = document.getElementById("customerPhone");
   const addressInput = document.getElementById("customerAddress");
   const dateInput = document.getElementById("preferredDate");
@@ -443,6 +444,7 @@ if (bookingForm) {
   }
 
   syncSummary(nameInput, "summaryName", "-");
+  syncSummary(emailInput, "summaryEmail", "-");
   syncSummary(phoneInput, "summaryPhone", "-");
   syncSummary(addressInput, "summaryAddress", "-");
   syncSummary(problemInput, "summaryProblem", "-");
@@ -457,6 +459,7 @@ if (bookingForm) {
 
   // ----- Validation + submit -----
   const phonePattern = /^[0-9]{10,15}$/;
+  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
   function showFieldError(inputEl, errorEl, message) {
     inputEl.classList.add("invalid");
@@ -475,6 +478,7 @@ if (bookingForm) {
     document.getElementById("bookingSuccess").textContent = "";
 
     const nameError = document.getElementById("customerNameError");
+    const emailError = document.getElementById("customerEmailError");
     const phoneError = document.getElementById("customerPhoneError");
     const addressError = document.getElementById("customerAddressError");
     const dateError = document.getElementById("preferredDateError");
@@ -483,13 +487,22 @@ if (bookingForm) {
 
     // Clear previous errors
     [
-      [nameInput, nameError], [phoneInput, phoneError], [addressInput, addressError],
+      [nameInput, nameError], [emailInput, emailError], [phoneInput, phoneError], [addressInput, addressError],
       [dateInput, dateError], [timeInput, timeError], [problemInput, problemError]
     ].forEach(([inputEl, errorEl]) => clearFieldError(inputEl, errorEl));
 
     // Full Name
     if (nameInput.value.trim() === "") {
       showFieldError(nameInput, nameError, "Please enter your full name.");
+      isValid = false;
+    }
+
+    // Email
+    if (emailInput.value.trim() === "") {
+      showFieldError(emailInput, emailError, "Please enter your email address.");
+      isValid = false;
+    } else if (!emailPattern.test(emailInput.value.trim())) {
+      showFieldError(emailInput, emailError, "Please enter a valid email address.");
       isValid = false;
     }
 
@@ -538,6 +551,7 @@ if (bookingForm) {
       service: bookingService.name,
       servicePrice: bookingService.price,
       name: nameInput.value.trim(),
+      email: emailInput.value.trim(),
       phone: phoneInput.value.trim(),
       address: addressInput.value.trim(),
       date: dateInput.value,
@@ -809,10 +823,10 @@ if (welcomeHeading) {
       problem: booking.problem
     };
 
-    // Personalize the profile card with the real name/phone that was entered
+    // Personalize the profile card with the real name/email/phone that was entered
     customer = {
       name: booking.name,
-      email: demoCustomer.email, // email wasn't collected on the booking form
+      email: booking.email,
       phone: booking.phone
     };
 
@@ -1472,7 +1486,7 @@ if (profileForm) {
     const booking = JSON.parse(savedBooking);
     profile = {
       name: booking.name,
-      email: demoProfile.email, // the booking form doesn't collect email
+      email: booking.email,
       phone: booking.phone,
       address: booking.address
     };
