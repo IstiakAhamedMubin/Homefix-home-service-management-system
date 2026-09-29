@@ -1,256 +1,222 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin Dashboard - HomeFix</title>
-
-  <!-- Google Fonts: Manrope for headings, Inter for body text -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-
-  <!-- Link to our main stylesheet (shared across every page) -->
-  <link rel="stylesheet" href="css/style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Panel - HomeFix</title>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+/* Design tokens mirrored from css/style.css (:root) */
+tailwind.config={theme:{extend:{colors:{navy:'#10293D',navyd:'#081722',brand:'#107E71',brandd:'#0E6F64',page:'#F7F6F2',tint:'#EAF2F1',line:'#E2E1DB',ink:'#1B242B',mute:'#5C6B70',ok:'#227644',okbg:'#DFF4E6',warn:'#945A16',warnbg:'#FBEEDC',bad:'#B53A3A',badbg:'#FBE7E7'},fontFamily:{head:['Manrope','Segoe UI','sans-serif']}}}}
+</script>
+<style>
+body{font-family:Inter,'Segoe UI',Arial,sans-serif;background:#F7F6F2;color:#1B242B;-webkit-font-smoothing:antialiased}
+h1,h2,h3,.font-head{font-family:Manrope,'Segoe UI',Arial,sans-serif;color:#10293D}
+.nav{display:flex;align-items:center;gap:12px;width:100%;padding:12px 24px;font-size:14px;font-weight:500;color:#A9C4C6;border-left:3px solid transparent;text-align:left}
+.nav:hover{color:#fff;background:rgba(255,255,255,.08)}
+.nav.on{color:#fff;background:rgba(255,255,255,.1);border-left-color:#fff;font-weight:600}
+.card{background:#fff;border:1px solid #E2E1DB;border-radius:12px;box-shadow:0 1px 3px rgba(16,32,45,.07)}
+.inp{width:100%;border:1.5px solid #E2E1DB;border-radius:8px;padding:10px 12px;font-size:14px;background:#fff}
+.inp:focus{outline:none;border-color:#107E71;background:#EAF2F1}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:9px 16px;border-radius:8px;font-size:13px;font-weight:600;background:#107E71;color:#fff;transition:.2s}
+.btn:hover{background:#0E6F64}
+.btn-o{background:#fff;color:#10293D;border:1.5px solid #E2E1DB}.btn-o:hover{background:#EAF2F1}
+.rb{font-size:12px;font-weight:600;padding:5px 12px;border-radius:999px;border:1.5px solid #E2E1DB;white-space:nowrap}
+.b{display:inline-block;padding:3px 11px;border-radius:999px;font-size:12px;font-weight:500;white-space:nowrap}
+th{text-align:left;font-size:12px;font-weight:600;color:#5C6B70;background:#EAF2F1;padding:10px 14px;white-space:nowrap}
+td{padding:12px 14px;font-size:14px;border-bottom:1px solid #E2E1DB;vertical-align:middle}
+tr:last-child td{border-bottom:0}
+.sw{appearance:none;width:38px;height:22px;border-radius:99px;background:#CBD5D7;position:relative;cursor:pointer;transition:.2s;flex-shrink:0}
+.sw:after{content:"";position:absolute;width:16px;height:16px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.2s}
+.sw:checked{background:#107E71}.sw:checked:after{transform:translateX(16px)}
+:focus-visible{outline:2px solid #107E71;outline-offset:2px}
+</style>
 </head>
 <body>
+<div class="flex min-h-screen">
+  <aside id="side" class="fixed lg:sticky top-0 z-40 h-screen w-64 shrink-0 bg-navy flex flex-col py-6 -translate-x-full lg:translate-x-0 transition-transform">
+    <div class="px-6 pb-5 font-head text-2xl font-extrabold text-white">HomeFix <span class="text-[11px] uppercase tracking-widest opacity-70 font-semibold">Admin</span></div>
+    <nav id="nav" class="flex-1 overflow-y-auto"></nav>
+    <button class="nav" style="color:#F3B4B4" onclick="logout()"><i class="fa-solid fa-right-from-bracket w-5 text-center"></i>Log Out</button>
+  </aside>
+  <div id="scrim" class="fixed inset-0 z-30 bg-black/40 hidden lg:hidden" onclick="menu(0)"></div>
 
-  <!-- =========================================================
-       This is a SINGLE-PAGE admin panel: the sidebar links don't
-       load new HTML files, they use JavaScript to show/hide
-       ".admin-section" blocks below. This keeps all the admin
-       management screens in one file, which is simpler to
-       maintain for a frontend-only demo than 6 separate pages.
-       ========================================================= -->
-  <div class="app-layout">
-
-    <!-- ============================= -->
-    <!-- SIDEBAR / NAVIGATION          -->
-    <!-- ============================= -->
-    <aside class="app-sidebar app-sidebar-admin">
-      <a href="admin.html" class="logo app-sidebar-logo">HomeFix Admin</a>
-
-      <nav class="app-sidebar-nav" id="adminNav">
-        <a href="#dashboard" class="app-nav-link active" data-section="dashboard">Dashboard</a>
-        <a href="#customers" class="app-nav-link" data-section="customers">Customers</a>
-        <a href="#providers" class="app-nav-link" data-section="providers">Service Providers</a>
-        <a href="#categories" class="app-nav-link" data-section="categories">Service Categories</a>
-        <a href="#bookings" class="app-nav-link" data-section="bookings">Bookings</a>
-        <a href="#payments" class="app-nav-link" data-section="payments">Payments</a>
-      </nav>
-
-      <button type="button" class="app-nav-link app-logout-btn" id="adminLogoutBtn">Log Out</button>
-    </aside>
-
-
-    <!-- ============================= -->
-    <!-- MAIN CONTENT                  -->
-    <!-- ============================= -->
-    <main class="app-main">
-
-      <!-- =====================================================
-           SECTION: DASHBOARD (overview)
-           ===================================================== -->
-      <div class="admin-section active" id="section-dashboard">
-
-        <section class="dash-welcome">
-          <h1>Admin Dashboard</h1>
-          <p>An overview of customers, providers, bookings, and payments.</p>
-        </section>
-
-        <section class="stats-grid" id="statsGrid">
-          <div class="stat-card">
-            <span class="stat-label">Total Customers</span>
-            <span class="stat-number" id="statCustomers">-</span>
-          </div>
-          <div class="stat-card">
-            <span class="stat-label">Total Service Providers</span>
-            <span class="stat-number" id="statProviders">-</span>
-          </div>
-          <div class="stat-card">
-            <span class="stat-label">Total Bookings</span>
-            <span class="stat-number" id="statTotalBookings">-</span>
-          </div>
-          <div class="stat-card">
-            <span class="stat-label">Pending Bookings</span>
-            <span class="stat-number stat-pending" id="statPending">-</span>
-          </div>
-          <div class="stat-card">
-            <span class="stat-label">Completed Bookings</span>
-            <span class="stat-number stat-completed" id="statCompleted">-</span>
-          </div>
-          <div class="stat-card">
-            <span class="stat-label">Total Payments</span>
-            <span class="stat-number" id="statPayments">-</span>
-          </div>
-        </section>
-
-        <div class="dash-grid">
-
-          <section class="dash-card booking-history-card">
-            <div class="dash-card-header">
-              <h2>Recent Bookings</h2>
-              <a href="#bookings" class="link-muted" data-section="bookings">View all</a>
-            </div>
-            <div class="dash-table-wrap">
-              <table class="dash-table">
-                <thead>
-                  <tr><th>Booking ID</th><th>Customer</th><th>Service</th><th>Date</th><th>Status</th></tr>
-                </thead>
-                <tbody id="recentBookingsBody"></tbody>
-              </table>
-            </div>
-          </section>
-
-          <section class="dash-card status-overview-card">
-            <div class="dash-card-header">
-              <h2>Booking Status Overview</h2>
-            </div>
-            <div class="status-overview" id="statusOverview"></div>
-          </section>
-
+  <div class="flex-1 min-w-0">
+    <header class="sticky top-0 z-20 h-[72px] bg-white border-b border-line px-5 lg:px-8 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <button class="lg:hidden text-navy text-xl" aria-label="Open menu" onclick="menu(1)"><i class="fa-solid fa-bars"></i></button>
+        <div><div class="text-[10px] uppercase tracking-widest text-mute">HomeFix / Admin</div><strong id="ttl" class="font-head text-navy"></strong></div>
+      </div>
+      <div class="flex items-center gap-4">
+        <button onclick="go('notifications')" aria-label="Notifications" class="relative w-9 h-9 rounded-full border border-line text-navy hover:bg-tint"><i class="fa-regular fa-bell"></i><span id="bell" class="absolute -top-1 -right-1 min-w-[18px] h-[18px] rounded-full bg-bad text-white text-[10px] font-bold items-center justify-center"></span></button>
+        <div class="flex items-center gap-2 pl-4 border-l border-line">
+          <div id="av" class="w-9 h-9 rounded-full bg-tint text-brand font-head font-extrabold flex items-center justify-center"></div>
+          <div class="hidden sm:block leading-tight"><strong id="an" class="text-xs text-navy block"></strong><span class="text-[10px] text-mute">Administrator</span></div>
         </div>
       </div>
-
-
-      <!-- =====================================================
-           SECTION: MANAGE CUSTOMERS
-           ===================================================== -->
-      <div class="admin-section" id="section-customers">
-        <section class="dash-welcome">
-          <h1>Manage Customers</h1>
-          <p>View registered customers and remove accounts if needed.</p>
-        </section>
-
-        <section class="dash-card">
-          <div class="dash-table-wrap">
-            <table class="dash-table">
-              <thead>
-                <tr><th>Name</th><th>Phone</th><th>Email</th><th>Bookings</th><th>Joined</th><th>Actions</th></tr>
-              </thead>
-              <tbody id="customersBody"></tbody>
-            </table>
-          </div>
-        </section>
-      </div>
-
-
-      <!-- =====================================================
-           SECTION: MANAGE SERVICE PROVIDERS
-           ===================================================== -->
-      <div class="admin-section" id="section-providers">
-        <section class="dash-welcome dash-welcome-row">
-          <div>
-            <h1>Manage Service Providers</h1>
-            <p>Add, edit, or remove the providers HomeFix works with.</p>
-          </div>
-          <button type="button" class="btn btn-primary btn-sm" id="addProviderBtn">+ Add Provider</button>
-        </section>
-
-        <section class="dash-card">
-          <div class="dash-table-wrap">
-            <table class="dash-table">
-              <thead>
-                <tr><th>Name</th><th>Category</th><th>Phone</th><th>Availability</th><th>Actions</th></tr>
-              </thead>
-              <tbody id="providersBody"></tbody>
-            </table>
-          </div>
-        </section>
-      </div>
-
-
-      <!-- =====================================================
-           SECTION: MANAGE SERVICE CATEGORIES
-           ===================================================== -->
-      <div class="admin-section" id="section-categories">
-        <section class="dash-welcome dash-welcome-row">
-          <div>
-            <h1>Manage Service Categories</h1>
-            <p>Control which services customers can book.</p>
-          </div>
-          <button type="button" class="btn btn-primary btn-sm" id="addCategoryBtn">+ Add Category</button>
-        </section>
-
-        <section class="dash-card">
-          <div class="dash-table-wrap">
-            <table class="dash-table">
-              <thead>
-                <tr><th>Category</th><th>Description</th><th>Base Price</th><th>Actions</th></tr>
-              </thead>
-              <tbody id="categoriesBody"></tbody>
-            </table>
-          </div>
-        </section>
-      </div>
-
-
-      <!-- =====================================================
-           SECTION: MANAGE BOOKINGS
-           ===================================================== -->
-      <div class="admin-section" id="section-bookings">
-        <section class="dash-welcome">
-          <h1>Manage Bookings</h1>
-          <p>View details, assign a provider, and update booking status.</p>
-        </section>
-
-        <section class="dash-card">
-          <div class="dash-table-wrap">
-            <table class="dash-table">
-              <thead>
-                <tr><th>Booking ID</th><th>Customer</th><th>Service</th><th>Date</th><th>Provider</th><th>Status</th><th>Actions</th></tr>
-              </thead>
-              <tbody id="bookingsBody"></tbody>
-            </table>
-          </div>
-        </section>
-      </div>
-
-
-      <!-- =====================================================
-           SECTION: PAYMENT INFORMATION
-           ===================================================== -->
-      <div class="admin-section" id="section-payments">
-        <section class="dash-welcome">
-          <h1>Payment Information</h1>
-          <p>A read-only ledger of payments linked to bookings.</p>
-        </section>
-
-        <section class="dash-card">
-          <div class="dash-table-wrap">
-            <table class="dash-table">
-              <thead>
-                <tr><th>Reference</th><th>Customer</th><th>Amount</th><th>Method</th><th>Status</th><th></th></tr>
-              </thead>
-              <tbody id="paymentsBody"></tbody>
-            </table>
-          </div>
-        </section>
-      </div>
-
-    </main>
+    </header>
+    <main id="view" class="p-5 lg:p-8 max-w-[1200px]"></main>
   </div>
+</div>
 
-
-  <!-- =========================================================
-       SHARED MODAL
-       One reusable popup used by every "View / Edit / Assign"
-       action across all the sections above. JavaScript fills in
-       the title and body content depending on which button was
-       clicked.
-       ========================================================= -->
-  <div class="modal-overlay" id="adminModal" hidden>
-    <div class="modal-box">
-      <div class="modal-header">
-        <h3 id="modalTitle">Details</h3>
-        <button type="button" class="modal-close" id="modalCloseBtn" aria-label="Close">&times;</button>
-      </div>
-      <div class="modal-body" id="modalBody"></div>
-    </div>
+<div id="modal" style="display:none" class="fixed inset-0 z-50 items-center justify-center bg-slate-900/50 p-4" onclick="if(event.target===this)closeM()">
+  <div class="card w-full max-w-md max-h-[85vh] overflow-y-auto">
+    <div class="flex items-center justify-between px-6 py-4 border-b border-line"><h3 id="mt" class="text-lg font-bold"></h3><button onclick="closeM()" aria-label="Close" class="text-2xl text-mute leading-none">&times;</button></div>
+    <div id="mb" class="p-6"></div>
   </div>
+</div>
+<div id="toast" class="fixed bottom-5 right-5 z-[60] bg-navy text-white text-sm px-4 py-2.5 rounded-lg shadow-lg hidden"></div>
 
+<script>
+"use strict";
+if(localStorage.getItem("homefixAdminLoggedIn")!=="true")location.replace("admin-login.html");
+/* ---------- Data layer: same key + schema as js/store.js ---------- */
+const KEY="homefixStoreV2",SK="homefixAdminSettings",$=s=>document.querySelector(s);
+const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const tk=n=>"৳"+Number(n||0).toLocaleString("en-US"),today=()=>new Date().toISOString().slice(0,10);
+const nid=a=>a.reduce((m,x)=>Math.max(m,+x.id||0),0)+1;
 
-  <!-- Shared JavaScript file (nav toggle, footer year, form validation,
-       service data, and now the full admin panel logic) -->
-  <script src="js/script.js"></script>
+const SEED=(()=>{
+  const CU=[["Rafiul Karim","rafiul@example.com","01712345678","House 12, Road 4, Dhanmondi, Dhaka","2026-03-12"],["Nusrat Jahan","nusrat@example.com","01798765432","Flat 3B, Green Road, Dhaka","2026-04-02"],["Tanvir Ahmed","tanvir@example.com","01711223344","House 7, Banani, Dhaka","2026-02-18"],["Farhana Akter","farhana@example.com","01755667788","House 21, Uttara, Dhaka","2026-06-25"],["Shakil Hossain","shakil@example.com","01799887766","House 9, Mirpur 10, Dhaka","2026-05-09"],["Mahmud Hasan","mahmud@example.com","01822334455","Road 11, Gulshan 1, Dhaka","2026-07-14"],["Sadia Rahman","sadia@example.com","01933445566","Flat 5A, Mohammadpur, Dhaka","2026-08-01"]].map((c,i)=>({id:i+1,name:c[0],email:c[1],phone:c[2],address:c[3],joined:c[4],status:"Active"}));
+  const SV=[["Electrician","Wiring, fixtures, and electrical repairs.",500],["Plumber","Leak fixes, pipe installation, and drainage.",450],["AC Repair","Servicing, repair, and installation.",800],["Carpenter","Furniture repair, fittings, and woodwork.",600],["Home Cleaning","Deep cleaning and move-in/move-out cleaning.",1000]].map((s,i)=>({id:i+1,name:s[0],description:s[1],price:s[2],status:"Active"}));
+  const PR=[["Kamal Hossain","kamal","01711111111","Electrician","Available","Active"],["Jashim Uddin","jashim","01733333333","Plumber","Busy","Active"],["Abdul Karim","abdul","01744444444","AC Repair","Available","Active"],["Mizanur Rahman","mizan","01755555555","Carpenter","Available","Active"],["Salma Begum","salma","01722222222","Home Cleaning","Available","Active"],["Rina Akter","rina","01766666666","Home Cleaning","Busy","Active"],["Rashed Khan","rashed","01777777777","Plumber","Available","Unverified"],["Nasima Khatun","nasima","01788888888","Electrician","Available","Unverified"]].map((p,i)=>({id:i+1,name:p[0],email:p[1]+"@homefix.demo",phone:p[2],specialization:p[3],availability:p[4],status:p[5]}));
+  const bk=(id,cid,sid,date,time,st,pid,prob,q)=>{const c=CU[cid-1],p=pid?PR[pid-1]:null;return{id:"HMFX-"+id,customerId:cid,customer:c.name,email:c.email,phone:c.phone,serviceId:sid,service:SV[sid-1].name,date,time,status:st,providerId:pid,provider:p?p.name:null,address:c.address,problem:prob,notes:"",quotation:q,adminNote:"",createdAt:date}};
+  const py=(id,cust,amount,method,txn,status,date)=>({id:"PAY-"+id,bookingId:"HMFX-"+id,customer:cust,amount,method,transactionId:txn,status,date});
+  const nt=(id,type,title,message,bid,read,date)=>({id,type,title,message,bookingId:bid,read,date});
+  return{customers:CU,services:SV,providers:PR,
+    bookings:[bk(11842,1,3,"2026-09-08","10:00","PENDING",null,"AC not cooling properly.",null),bk(11841,2,2,"2026-09-07","14:00","SCHEDULED",2,"Leaking kitchen pipe.",500),bk(11840,3,5,"2026-09-05","09:00","COMPLETED",5,"Full apartment deep clean.",1050),bk(11839,4,1,"2026-09-04","11:00","IN_PROGRESS",1,"Switchboard sparking.",650),bk(11838,5,4,"2026-09-03","16:00","SCHEDULED",4,"Wardrobe door hinge broken.",650),bk(11837,1,3,"2026-09-02","12:00","COMPLETED",3,"AC gas refill needed.",850),bk(11836,2,2,"2026-09-01","10:30","COMPLETED",2,"Bathroom drain blocked.",500),bk(11835,6,1,"2026-08-29","15:00","REJECTED",null,"Ceiling fan wiring replacement.",null),bk(11834,7,5,"2026-08-27","09:30","COMPLETED",6,"Move-out cleaning.",1050),bk(11833,3,4,"2026-08-24","11:30","QUOTED",null,"Custom bookshelf repair.",700)],
+    payments:[py(11840,"Tanvir Ahmed",1050,"Mobile Banking","TXN-847201","PAID","2026-09-05"),py(11839,"Farhana Akter",650,"Card","TXN-847155","PAID","2026-09-04"),py(11841,"Nusrat Jahan",500,"Cash on Service","CASH-11841","PENDING","2026-09-07"),py(11838,"Shakil Hossain",650,"Cash on Service","CASH-11838","PENDING","2026-09-03"),py(11837,"Rafiul Karim",850,"Card","TXN-846902","PAID","2026-09-02"),py(11836,"Nusrat Jahan",500,"Mobile Banking","TXN-846790","PAID","2026-09-01"),py(11834,"Sadia Rahman",1050,"Card","TXN-846120","PAID","2026-08-27")],
+    notifications:[nt(1,"booking","New booking received","A new AC Repair request is waiting for review.","HMFX-11842",false,"2026-09-08"),nt(2,"payment","Payment recorded","Payment received for HMFX-11840.","HMFX-11840",true,"2026-09-05"),nt(3,"assignment","Provider assigned","Jashim Uddin was assigned to HMFX-11841.","HMFX-11841",false,"2026-09-07"),nt(4,"completed","Booking completed","HMFX-11837 has been marked as completed.","HMFX-11837",true,"2026-09-02")]};
+})();
+const HIST={"2026-03":[1800,4],"2026-04":[2600,6],"2026-05":[3100,7],"2026-06":[3900,9],"2026-07":[4300,10],"2026-08":[4700,11]}; // archived monthly totals; later months are computed live
+
+function load(){try{const r=localStorage.getItem(KEY);if(r)return JSON.parse(r)}catch(_){}const d=JSON.parse(JSON.stringify(SEED));localStorage.setItem(KEY,JSON.stringify(d));return d}
+function save(d){localStorage.setItem(KEY,JSON.stringify(d));window.dispatchEvent(new CustomEvent("homefix:store-updated"))}
+function mut(fn,msg){const d=load();fn(d);save(d);render();if(msg)toast(msg)}
+const S=()=>{let o={};try{o=JSON.parse(localStorage.getItem(SK)||"{}")}catch(_){}return{name:"HomeFix Administrator",email:"admin@homefix.example",phone:"01700000000",platform:"HomeFix",maintenance:false,emailAlerts:true,autoAssign:false,registrations:true,...o}};
+
+/* ---------- UI helpers ---------- */
+// Store statuses -> the four admin badges
+const GR={PENDING:"Pending",QUOTED:"Pending",ACCEPTED:"Accepted",PAID:"Accepted",SCHEDULED:"Accepted",IN_PROGRESS:"Accepted",COMPLETED:"Completed",REJECTED:"Cancelled"};
+const CL={Pending:"bg-warnbg text-warn",Accepted:"bg-tint text-navy",Completed:"bg-okbg text-ok",Cancelled:"bg-badbg text-bad",Active:"bg-okbg text-ok",Inactive:"bg-badbg text-bad",Unverified:"bg-warnbg text-warn",Available:"bg-okbg text-ok",Busy:"bg-warnbg text-warn",PAID:"bg-okbg text-ok",PENDING:"bg-warnbg text-warn"};
+const bd=(t,tip)=>`<span class="b ${CL[t]||CL.Pending}"${tip?` title="${esc(tip)}"`:""}>${esc(t)}</span>`;
+const hd=(t,sub,act="")=>`<div class="flex flex-wrap items-end justify-between gap-4 mb-6"><div><h1 class="text-3xl font-extrabold">${t}</h1><p class="text-sm text-mute mt-1">${sub}</p></div>${act}</div>`;
+const tbl=(h,rows,id="")=>`<div class="overflow-x-auto"><table class="w-full"><thead><tr>${h.map(x=>`<th>${x}</th>`).join("")}</tr></thead><tbody ${id?`id="${id}"`:""}>${rows||`<tr><td colspan="${h.length}" class="text-center text-mute py-8">No records found.</td></tr>`}</tbody></table></div>`;
+const who=(n,sub)=>`<div class="flex items-center gap-3"><div class="w-8 h-8 rounded-full bg-tint text-brand font-bold text-xs flex items-center justify-center shrink-0">${esc(n[0])}</div><div class="leading-tight"><strong class="text-navy">${esc(n)}</strong><div class="text-[11px] text-mute">${esc(sub)}</div></div></div>`;
+const fld=(l,n,x="",v="")=>`<label class="block mb-4 text-[13px] font-semibold">${l}<input class="inp mt-1.5 font-normal" name="${n}" value="${esc(v)}" ${x}></label>`;
+const tg=(n,l,sub,on)=>`<label class="flex items-center justify-between gap-4 py-3.5 border-b border-line last:border-0 cursor-pointer"><span><strong class="block text-sm text-navy">${l}</strong><small class="text-mute">${sub}</small></span><input type="checkbox" class="sw" name="${n}" ${on?"checked":""}></label>`;
+const ICON={Electrician:"bolt",Plumber:"faucet-drip","AC Repair":"snowflake",Carpenter:"hammer","Home Cleaning":"broom"};
+function toast(m){const t=$("#toast");t.textContent=m;t.classList.remove("hidden");clearTimeout(toast.t);toast.t=setTimeout(()=>t.classList.add("hidden"),2200)}
+function openM(t,h){$("#mt").textContent=t;$("#mb").innerHTML=h;$("#modal").style.display="flex";const f=$("#mb input,#mb textarea");if(f)f.focus()}
+function closeM(){$("#modal").style.display="none"}
+function menu(o){$("#side").classList.toggle("-translate-x-full",!o);$("#scrim").classList.toggle("hidden",!o)}
+function logout(){localStorage.removeItem("homefixAdminLoggedIn");location.href="admin-login.html"}
+document.addEventListener("keydown",e=>{if(e.key==="Escape")closeM()});
+window.addEventListener("storage",e=>{if(e.key!==KEY&&e.key!==null)return;const a=document.activeElement;if(a&&a.closest&&a.closest("#view")&&/INPUT|TEXTAREA|SELECT/.test(a.tagName)&&a.type!=="checkbox")return;render()});
+
+/* ---------- Tabs ---------- */
+const TABS=[["dashboard","Dashboard","gauge-high"],["bookings","Manage Bookings","calendar-check"],["providers","Manage Providers","user-gear"],["customers","Manage Customers","users"],["services","Manage Services","screwdriver-wrench"],["payments","Manage Payments","credit-card"],["notifications","Manage Notifications","bell"],["reports","Reports","chart-bar"],["settings","Settings","gear"]];
+let tab=TABS.some(t=>t[0]===location.hash.slice(1))?location.hash.slice(1):"dashboard";
+let F={bf:"all",bq:""};
+function go(t){tab=t;history.replaceState(null,"","#"+t);menu(0);render();scrollTo(0,0)}
+
+function render(){
+  const d=load(),s=S(),un=d.notifications.filter(n=>!n.read).length,pn=d.bookings.filter(b=>GR[b.status]==="Pending").length;
+  $("#nav").innerHTML=TABS.map(([id,l,i])=>`<button class="nav ${id===tab?"on":""}" onclick="go('${id}')"><i class="fa-solid fa-${i} w-5 text-center"></i><span>${l}</span>${id==="bookings"&&pn?`<span class="ml-auto text-[10px] font-bold bg-[#F2C78F] text-navy rounded-full px-2 py-0.5">${pn}</span>`:""}</button>`).join("");
+  $("#ttl").textContent=TABS.find(t=>t[0]===tab)[1];
+  $("#bell").textContent=un;$("#bell").style.display=un?"flex":"none";
+  $("#an").textContent=s.name;$("#av").textContent=s.name[0]||"A";
+  $("#view").innerHTML=V[tab](d,s);
+}
+
+const V={};
+
+V.dashboard=d=>{
+  const paid=d.payments.filter(p=>p.status==="PAID").reduce((a,p)=>a+p.amount,0);
+  const act=d.bookings.filter(b=>["Pending","Accepted"].includes(GR[b.status])).length;
+  const k=[["Total Revenue",tk(paid),"sack-dollar","bg-okbg text-ok"],["Active Bookings",act,"calendar-check","bg-warnbg text-warn"],["Service Providers",d.providers.length,"user-gear","bg-tint text-brand"],["Customers",d.customers.length,"users","bg-[#E8EFF3] text-navy"]];
+  const rows=[...d.bookings].sort((a,b)=>b.date.localeCompare(a.date)).slice(0,6).map(b=>`<tr><td><strong class="text-navy">${esc(b.id)}</strong></td><td>${esc(b.customer)}</td><td>${esc(b.service)}</td><td>${esc(b.date)}</td><td>${b.quotation?tk(b.quotation):"—"}</td><td>${bd(GR[b.status],b.status)}</td></tr>`).join("");
+  return hd("Admin Dashboard","Overview of HomeFix bookings, providers, customers and revenue.")+
+  `<div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 mb-6">${k.map(x=>`<div class="card p-5 flex items-center gap-4"><div class="w-12 h-12 rounded-xl flex items-center justify-center text-lg ${x[3]}"><i class="fa-solid fa-${x[2]}"></i></div><div><div class="text-xs text-mute">${x[0]}</div><div class="font-head text-2xl font-extrabold text-navy">${x[1]}</div></div></div>`).join("")}</div>`+
+  `<div class="card p-6"><div class="flex justify-between items-center mb-4"><h2 class="text-lg font-bold">Recent Activity</h2><button class="text-xs font-semibold text-brand" onclick="go('bookings')">View all →</button></div>${tbl(["Booking","Customer","Service","Date","Amount","Status"],rows)}</div>`;
+};
+
+const bkRows=d=>{
+  const q=F.bq.toLowerCase();
+  return d.bookings.filter(b=>(F.bf==="all"||GR[b.status]===F.bf)&&(b.id+b.customer+b.service+(b.provider||"")).toLowerCase().includes(q)).map(b=>{
+    const g=GR[b.status];
+    const opts=d.providers.filter(p=>p.status==="Active"&&p.specialization===b.service).map(p=>`<option value="${p.id}" ${p.id===b.providerId?"selected":""}>${esc(p.name)}${p.availability==="Busy"?" (busy)":""}</option>`).join("");
+    const prov=g==="Accepted"?`<select class="inp !py-1.5 !text-xs min-w-[130px]" onchange="bAct('${b.id}','assign',this.value)"><option value="">Assign…</option>${opts}</select>`:esc(b.provider||"—");
+    const act=b.status==="QUOTED"?`<span class="text-xs text-mute mr-1">Awaiting customer</span><button class="rb text-bad hover:bg-badbg" onclick="bAct('${b.id}','reject')">Reject</button>`:g==="Pending"?`<button class="rb text-ok hover:bg-okbg" onclick="bAct('${b.id}','approve')"><i class="fa-solid fa-check"></i> Approve</button> <button class="rb text-bad hover:bg-badbg" onclick="bAct('${b.id}','reject')"><i class="fa-solid fa-xmark"></i> Reject</button>`:g==="Accepted"?`<button class="rb text-ok hover:bg-okbg" onclick="bAct('${b.id}','complete')">Complete</button> <button class="rb text-bad hover:bg-badbg" onclick="bAct('${b.id}','reject')">Cancel</button>`:"—";
+    return `<tr><td><strong class="text-navy">${esc(b.id)}</strong></td><td>${esc(b.customer)}</td><td>${esc(b.service)}</td><td>${esc(b.date)} <span class="text-mute text-xs">${esc(b.time)}</span></td><td>${prov}</td><td>${b.quotation?tk(b.quotation):"—"}</td><td>${bd(g,b.status)}</td><td class="whitespace-nowrap">${act}</td></tr>`}).join("");
+};
+const bkTable=()=>{$("#bkBody").innerHTML=bkRows(load())};
+V.bookings=d=>hd("Manage Bookings","Review requests, approve or reject them, and assign providers.")+
+  `<div class="card p-6"><div class="flex flex-wrap gap-3 mb-4"><div class="relative flex-1 min-w-[200px] max-w-md"><i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-mute text-xs"></i><input class="inp !pl-9" type="search" placeholder="Search booking, customer, service…" value="${esc(F.bq)}" oninput="F.bq=this.value;bkTable()"></div><select class="inp !w-auto" onchange="F.bf=this.value;bkTable()">${["all","Pending","Accepted","Completed","Cancelled"].map(o=>`<option value="${o}" ${F.bf===o?"selected":""}>${o==="all"?"All statuses":o}</option>`).join("")}</select></div>${tbl(["Booking","Customer","Service","Schedule","Provider","Amount","Status","Actions"],bkRows(d),"bkBody")}</div>`;
+
+function bAct(id,a,v){mut(d=>{
+  const b=d.bookings.find(x=>x.id===id);if(!b)return;
+  const n=(type,t,m)=>d.notifications.unshift({id:Date.now(),type,title:t,message:m,bookingId:id,read:false,date:today()});
+  const free=()=>{const p=d.providers.find(x=>x.id===b.providerId);if(p)p.availability="Available"};
+  if(a==="approve"){b.status="ACCEPTED";b.quotation=b.quotation||(d.services.find(s=>s.id===b.serviceId)||{}).price||0;n("booking","Booking approved",id+" was approved by admin.");if(S().autoAssign){const p=d.providers.find(x=>x.status==="Active"&&x.availability==="Available"&&x.specialization===b.service);if(p){b.providerId=p.id;b.provider=p.name;b.status="SCHEDULED";p.availability="Busy";n("assignment","Provider auto-assigned",p.name+" was assigned to "+id+".")}}}
+  if(a==="reject"){free();b.status="REJECTED";n("booking","Booking cancelled",id+" was rejected/cancelled by admin.")}
+  if(a==="complete"){free();b.status="COMPLETED";n("completed","Booking completed",id+" has been marked as completed.")}
+  if(a==="assign"){const p=d.providers.find(x=>x.id==v);if(p){free();b.providerId=p.id;b.provider=p.name;if(["ACCEPTED","PAID"].includes(b.status))b.status="SCHEDULED";p.availability="Busy";n("assignment","Provider assigned",p.name+" was assigned to "+id+".")}}
+},"Booking updated")}
+
+V.providers=d=>hd("Manage Providers","Verify service providers and monitor their availability.")+
+  `<div class="card p-6">${tbl(["Provider","Specialization","Phone","Availability","Verified","Status"],d.providers.map(p=>`<tr><td>${who(p.name,p.email)}</td><td>${esc(p.specialization)}</td><td>${esc(p.phone)}</td><td>${bd(p.availability)}</td><td><input type="checkbox" class="sw" aria-label="Verified" ${p.status==="Active"?"checked":""} onchange="pv(${p.id},this.checked)"></td><td>${bd(p.status==="Active"?"Active":"Unverified")}</td></tr>`).join(""))}</div>`;
+const pv=(id,on)=>mut(d=>{const p=d.providers.find(x=>x.id===id);if(p)p.status=on?"Active":"Unverified"},on?"Provider verified":"Verification removed");
+
+V.customers=d=>hd("Manage Customers","Customer directory with contact details and booking activity.")+
+  `<div class="card p-6">${tbl(["Customer","Contact","Address","Bookings","Joined","Status"],d.customers.map(c=>`<tr><td>${who(c.name,"ID #"+c.id)}</td><td><div>${esc(c.email)}</div><div class="text-xs text-mute">${esc(c.phone)}</div></td><td class="text-mute text-[13px]">${esc(c.address)}</td><td><strong class="text-navy">${d.bookings.filter(b=>b.customerId===c.id).length}</strong></td><td>${esc(c.joined)}</td><td>${bd(c.status||"Active")}</td></tr>`).join(""))}</div>`;
+
+V.services=d=>hd("Manage Services","The service catalog customers can book.",`<button class="btn" onclick="svM()"><i class="fa-solid fa-plus"></i> Add New Service</button>`)+
+  `<div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">${d.services.map(s=>`<article class="card p-5 flex flex-col"><div class="flex items-center justify-between mb-3"><div class="w-11 h-11 rounded-full bg-tint text-brand flex items-center justify-center text-lg"><i class="fa-solid fa-${ICON[s.name]||"screwdriver-wrench"}"></i></div>${bd(s.status||"Active")}</div><h3 class="text-lg font-bold">${esc(s.name)}</h3><p class="text-[13px] text-mute mt-1 mb-3 flex-1">${esc(s.description)}</p><div class="text-sm mb-4">From <strong class="text-brand text-base">${tk(s.price)}</strong></div><div class="flex gap-2"><button class="rb hover:bg-tint" onclick="svT(${s.id})">${s.status==="Active"?"Deactivate":"Activate"}</button><button class="rb text-bad hover:bg-badbg" onclick="svD(${s.id})">Delete</button></div></article>`).join("")||'<p class="text-mute">No services yet.</p>'}</div>`;
+const svT=id=>mut(d=>{const s=d.services.find(x=>x.id===id);if(s)s.status=s.status==="Active"?"Inactive":"Active"});
+const svD=id=>{if(confirm("Delete this service?"))mut(d=>{d.services=d.services.filter(x=>x.id!==id)},"Service deleted")};
+const svM=()=>openM("Add New Service",`<form onsubmit="svA(event)">${fld("Service name","name","required")}<label class="block mb-4 text-[13px] font-semibold">Description<textarea class="inp mt-1.5 font-normal" name="description" rows="3"></textarea></label>${fld("Base price (৳)","price",'type="number" min="1" required')}<label class="block mb-5 text-[13px] font-semibold">Status<select class="inp mt-1.5 font-normal" name="status"><option>Active</option><option>Inactive</option></select></label><p id="svErr" class="text-bad text-xs mb-3 min-h-[16px]" role="alert"></p><button class="btn w-full justify-center">Add Service</button></form>`);
+function svA(e){e.preventDefault();const f=Object.fromEntries(new FormData(e.target)),nm=f.name.trim(),err=m=>{$("#svErr").textContent=m};if(nm.length<2)return err("Enter a service name (min 2 characters).");if(load().services.some(s=>s.name.toLowerCase()===nm.toLowerCase()))return err("A service with this name already exists.");if(!(+f.price>0))return err("Enter a base price greater than 0.");closeM();mut(d=>{d.services.push({id:nid(d.services),name:f.name.trim(),description:f.description.trim(),price:+f.price,status:f.status})},"Service added")}
+
+V.payments=d=>{
+  const sum=st=>d.payments.filter(p=>p.status===st).reduce((a,p)=>a+p.amount,0);
+  const k=[["Collected",tk(sum("PAID"))],["Pending",tk(sum("PENDING"))],["Transactions",d.payments.length]];
+  return hd("Manage Payments","Financial transaction log for all bookings.")+
+  `<div class="grid sm:grid-cols-3 gap-4 mb-6">${k.map(x=>`<div class="card p-5"><div class="text-xs text-mute">${x[0]}</div><div class="font-head text-2xl font-extrabold text-navy">${x[1]}</div></div>`).join("")}</div>`+
+  `<div class="card p-6">${tbl(["Payment","Booking","Customer","Amount","Method","Transaction","Date","Status","Action"],d.payments.map(p=>`<tr><td><strong class="text-navy">${esc(p.id)}</strong></td><td>${esc(p.bookingId)}</td><td>${esc(p.customer)}</td><td>${tk(p.amount)}</td><td>${esc(p.method)}</td><td class="text-xs text-mute">${esc(p.transactionId)}</td><td>${esc(p.date)}</td><td>${bd(p.status==="PAID"?"Paid":"Pending")}</td><td>${p.status==="PENDING"?`<button class="rb text-ok hover:bg-okbg" onclick="payOk('${p.id}')">Mark paid</button>`:"—"}</td></tr>`).join(""))}</div>`;
+};
+const payOk=id=>mut(d=>{const p=d.payments.find(x=>x.id===id);if(!p)return;p.status="PAID";p.date=today();const b=d.bookings.find(x=>x.id===p.bookingId);if(b&&b.status==="ACCEPTED")b.status="PAID"},"Payment marked as paid");
+CL.Paid=CL.PAID;
+
+V.notifications=d=>hd("Manage Notifications","Send announcements and review system activity.",`<button class="btn btn-o" onclick="rdAll()">Mark all read</button>`)+
+  `<div class="grid lg:grid-cols-5 gap-6"><form class="card p-6 lg:col-span-2 self-start" onsubmit="sendN(event)"><h2 class="text-lg font-bold mb-4">Send Announcement</h2><label class="block mb-4 text-[13px] font-semibold">Audience<select class="inp mt-1.5 font-normal" name="audience"><option>All Users</option><option>Customers</option><option>Providers</option></select></label>${fld("Title","title","required maxlength=80")}<label class="block mb-5 text-[13px] font-semibold">Message<textarea class="inp mt-1.5 font-normal" name="message" rows="4" required></textarea></label><button class="btn w-full justify-center"><i class="fa-solid fa-paper-plane"></i> Send</button></form>`+
+  `<div class="card p-6 lg:col-span-3"><h2 class="text-lg font-bold mb-2">Activity Log</h2>${d.notifications.slice(0,12).map(n=>`<button class="w-full flex gap-3 items-start text-left py-3 border-b border-line last:border-0 ${n.read?"opacity-70":""}" onclick="rdN(${n.id})"><span class="w-9 h-9 rounded-lg bg-tint text-brand flex items-center justify-center shrink-0"><i class="fa-solid fa-${n.type==="announcement"?"bullhorn":n.type==="payment"?"credit-card":"bell"}"></i></span><span class="flex-1"><strong class="block text-sm text-navy">${esc(n.title)}${n.audience?` <span class="b bg-tint text-brand ml-1">${esc(n.audience)}</span>`:""}</strong><small class="text-mute">${esc(n.message)}</small><em class="block text-[11px] text-mute not-italic mt-0.5">${esc(n.date)}</em></span>${n.read?"":'<i class="w-2 h-2 rounded-full bg-brand mt-2"></i>'}</button>`).join("")||'<p class="text-mute py-6 text-center">No notifications.</p>'}</div></div>`;
+function sendN(e){e.preventDefault();const f=Object.fromEntries(new FormData(e.target));if(!f.title.trim()||!f.message.trim())return toast("Title and message cannot be empty");mut(d=>{d.notifications.unshift({id:Date.now(),type:"announcement",title:f.title.trim(),message:f.message.trim(),audience:f.audience,read:true,date:today()})},"Announcement sent to "+f.audience.toLowerCase())}
+const rdN=id=>mut(d=>{const n=d.notifications.find(x=>x.id===id);if(n)n.read=true});
+const rdAll=()=>mut(d=>d.notifications.forEach(n=>n.read=true),"All marked as read");
+
+const MN=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+function chart(rows,fmt,col){
+  const W=520,H=230,m=Math.max(...rows.map(r=>r[1]),1),bw=W/rows.length;
+  return `<svg viewBox="0 0 ${W} ${H+32}" class="w-full" role="img"><line x1="0" x2="${W}" y1="${H}" y2="${H}" stroke="#E2E1DB"/>${rows.map((r,i)=>{const h=r[1]/m*(H-40),x=i*bw+bw*.2,c=x+bw*.3;return `<rect x="${x}" y="${H-h}" width="${bw*.6}" height="${h}" rx="5" fill="${col}"/><text x="${c}" y="${H-h-7}" text-anchor="middle" font-size="12" font-weight="600" fill="#10293D">${fmt(r[1])}</text><text x="${c}" y="${H+20}" text-anchor="middle" font-size="12" fill="#5C6B70">${r[0]}</text>`}).join("")}</svg>`;
+}
+V.reports=d=>{
+  const M={};Object.entries(HIST).forEach(([k,v])=>M[k]=[...v]);
+  d.payments.filter(p=>p.status==="PAID"&&p.date>="2026-09").forEach(p=>{(M[p.date.slice(0,7)]??=[0,0])[0]+=p.amount});
+  d.bookings.filter(b=>b.date>="2026-09").forEach(b=>{(M[b.date.slice(0,7)]??=[0,0])[1]++});
+  const ks=Object.keys(M).sort().slice(-6),lab=k=>MN[+k.slice(5)-1];
+  return hd("Reports","Monthly earnings and booking volume (earlier months are archived totals; recent months update live).")+
+  `<div class="grid xl:grid-cols-2 gap-6"><div class="card p-6"><h2 class="text-lg font-bold mb-3">Monthly Earnings</h2>${chart(ks.map(k=>[lab(k),M[k][0]]),v=>"৳"+(v>=1000?(v/1000).toFixed(1)+"k":v),"#107E71")}</div><div class="card p-6"><h2 class="text-lg font-bold mb-3">Booking Volume</h2>${chart(ks.map(k=>[lab(k),M[k][1]]),v=>v,"#D98A3D")}</div></div>`;
+};
+
+V.settings=(d,s)=>hd("Settings","Admin profile and platform preferences.")+
+  `<form class="grid lg:grid-cols-2 gap-6" onsubmit="saveS(event)"><div class="card p-6"><h2 class="text-lg font-bold mb-4">Admin Profile</h2>${fld("Full name","name","required",s.name)}${fld("Email","email",'type="email" required',s.email)}${fld("Phone","phone","",s.phone)}</div><div class="card p-6"><h2 class="text-lg font-bold mb-2">System Preferences</h2><div class="mb-3">${fld("Platform name","platform","required",s.platform)}</div>${tg("maintenance","Maintenance mode","Temporarily pause new bookings.",s.maintenance)}${tg("emailAlerts","Email alerts","Notify admins about new bookings.",s.emailAlerts)}${tg("autoAssign","Auto-assign providers","Match available providers automatically.",s.autoAssign)}${tg("registrations","Open registrations","Allow new customers to sign up.",s.registrations)}</div><div class="lg:col-span-2 flex flex-wrap gap-3"><button class="btn">Save Settings</button><button type="button" class="btn btn-o !text-bad" onclick="resetD()"><i class="fa-solid fa-rotate-left"></i> Reset demo data</button></div></form>`;
+function saveS(e){e.preventDefault();const f=new FormData(e.target);if(!f.get("name").trim()||!f.get("platform").trim())return toast("Name and platform name are required");if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(f.get("email").trim()))return toast("Enter a valid email address");localStorage.setItem(SK,JSON.stringify({name:f.get("name").trim(),email:f.get("email").trim(),phone:f.get("phone").trim(),platform:f.get("platform").trim(),maintenance:f.has("maintenance"),emailAlerts:f.has("emailAlerts"),autoAssign:f.has("autoAssign"),registrations:f.has("registrations")}));render();toast("Settings saved")}
+function resetD(){if(confirm("Reset all HomeFix demo data (shared with customer pages)?")){localStorage.setItem(KEY,JSON.stringify(SEED));localStorage.removeItem(SK);render();toast("Demo data reset")}}
+
+load();render();
+</script>
 </body>
 </html>

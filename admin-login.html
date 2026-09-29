@@ -72,6 +72,29 @@
 
   <!-- Shared JavaScript file (nav toggle, footer year, form validation,
        and now admin login validation) -->
-  <script src="js/script.js"></script>
+  <script src="js/store.js"></script>
+<script src="js/script.js"></script>
+<script>
+(function () {
+  "use strict";
+  if (localStorage.getItem("homefixAdminLoggedIn") === "true") { location.replace("admin.html"); return; }
+  var form = document.getElementById("adminLoginForm");
+  var email = document.getElementById("adminEmail"), pass = document.getElementById("adminPassword");
+  var eErr = document.getElementById("adminEmailError"), pErr = document.getElementById("adminPasswordError");
+  var ok = document.getElementById("adminLoginSuccess");
+  var pattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  function flag(input, el, msg) { el.textContent = msg; input.classList.toggle("invalid", !!msg); return !msg; }
+  [email, pass].forEach(function (i) { i.addEventListener("input", function () { flag(i, i === email ? eErr : pErr, ""); }); });
+  form.addEventListener("submit", function (ev) {
+    ev.preventDefault();
+    var a = flag(email, eErr, !email.value.trim() ? "Email is required." : !pattern.test(email.value.trim()) ? "Enter a valid email address." : "");
+    var b = flag(pass, pErr, !pass.value ? "Password is required." : pass.value.length < 6 ? "Password must be at least 6 characters." : "");
+    if (!a || !b) return;
+    localStorage.setItem("homefixAdminLoggedIn", "true");
+    ok.textContent = "Signed in. Redirecting…";
+    setTimeout(function () { location.href = "admin.html"; }, 400);
+  });
+})();
+</script>
 </body>
 </html>
